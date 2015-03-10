@@ -25,6 +25,8 @@ block body
     br
   p Recent Comments
   br
-  #{recentComment}
 
-  
+  ul
+    each comment, i in comments
+      li
+        p #{comment.commentContent}

@@ -1,6 +1,7 @@
 var bodyParser = require('body-parser');
 var express = require('express');
 var bcrypt = require('bcryptjs')
+var slug = require('mongoose-slug');
 //var csrf = require('csurf');
 var mongoose = require('mongoose');
 var sessions = require('client-sessions');
@@ -18,19 +19,25 @@ var User = mongoose.model('moqaUser', new Schema({
 	password: String,
 }));
 
-var Comment = mongoose.model('moqaComment', new Schema({
-	id: ObjectId,
+var schema = new Schema({
+	_id: ObjectId,
+	commentId: ObjectId,
 	moqaName: String,
 	commentTimeStamp: Date,
 	commentContent: String,
-}));
+});
+
+schema.plugin(slug(['commentId', 'moqaName', 'commentTimeStamp']));
+
+var Comment = mongoose.model('moqaComment', schema);
+
 
 var app = express();
 app.set('view engine', 'jade');
 app.locals.pretty = true;
 
+var db = mongoose.connection;
 mongoose.connect('mongodb://localhost/mongoMoqaDB');
-
 
 // MIDDLEWARE
 app.use(bodyParser.urlencoded({extended: true}));
@@ -133,18 +140,25 @@ app.get('/login', function(req,res){
 })
 
 app.get('/dashboard', requireLogin, function(req,res){
-	var temp = Comment.findOne({moqaName: req.session.user.moqaName});
-	res.locals.recentComment = temp.commentContent;
-	res.render('dashboard.jade');
-})
+	var moqaComment = mongoose.model('moqaComment');
+	moqaComment.find({'moqaName': req.session.user.moqaName}, {}, function(e, comments){
+		console.log(comments[0].commentContent);
+		res.render('dashboard.jade', {'comments': comments});
+	});
+});
 
 app.post('/dashboard', function(req,res){
+	var id = new mongoose.Types.ObjectId;
+
 	var comment = new Comment({
+		_id: id,
+		commentId: id,
 		moqaName: req.session.user.moqaName,
 		commentTimeStamp: Date.now(),
 		commentContent: req.body.commentContent,
 	})
 	comment.save(function(err){
+		comment.slug;
 		if(err){
 			var err = 'Something bad happened! Try again!';
 		}
