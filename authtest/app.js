@@ -11,7 +11,6 @@ var ObjectId = Schema.ObjectId;
 
 //connect to mongo
 var User = mongoose.model('moqaUser', new Schema({
-	id: ObjectId,
 	moqaName: String,
 	firstName: String,
 	lastName: String,
@@ -19,18 +18,28 @@ var User = mongoose.model('moqaUser', new Schema({
 	password: String,
 }));
 
-var schema = new Schema({
+var threadSchema = new Schema({
 	_id: ObjectId,
+	moqaName: String,
+	threadTitle: String,
+	threadContent: String,
+	threadTimeStamp: Date,
+});
+var Thread = mongoose.model('moqaThread', threadSchema);
+
+var commentSchema = new Schema({
+	_id: ObjectId,
+	threadId: String,
 	commentId: ObjectId,
 	moqaName: String,
 	commentTimeStamp: Date,
 	commentContent: String,
 });
+var Comment = mongoose.model('moqaComment', commentSchema);
 
-schema.plugin(slug(['commentId', 'moqaName', 'commentTimeStamp']));
 
-var Comment = mongoose.model('moqaComment', schema);
-
+commentSchema.plugin(slug(['threadId', 'commentId', 'moqaName', 'commentTimeStamp']));
+threadSchema.plugin(slug(['threadId', 'moqaName', 'threadTimeStamp']));
 
 var app = express();
 app.set('view engine', 'jade');
@@ -120,13 +129,15 @@ app.post('/register', function(req,res){
 		email: req.body.email,
 		password: hash,
 	});
+	console.log(user)
 	user.save(function(err){
 		if (err){
+			console.log(err)
 			var err = 'Something bad happened! Try again!';
 			if (err.code === 11000){
-				error = 'That email is already taken.'
+				err = 'That email is already taken.'
 			}
-			res.render('register.jade', {error: error});
+			res.render('register.jade', {error: err});
 		}
 		else{
 			res.redirect('/dashboard');
@@ -140,9 +151,12 @@ app.get('/login', function(req,res){
 })
 
 app.get('/dashboard', requireLogin, function(req,res){
+	//console.log(req.session.threadId)
 	var moqaComment = mongoose.model('moqaComment');
 	moqaComment.find({'moqaName': req.session.user.moqaName}, {}, function(e, comments){
-		console.log(comments[0].commentContent);
+		if (comments.length > 0){
+			console.log(comments[0].commentContent);
+		}
 		res.render('dashboard.jade', {'comments': comments});
 	});
 });
@@ -153,6 +167,7 @@ app.post('/dashboard', function(req,res){
 	var comment = new Comment({
 		_id: id,
 		commentId: id,
+		threadId: 1,
 		moqaName: req.session.user.moqaName,
 		commentTimeStamp: Date.now(),
 		commentContent: req.body.commentContent,
@@ -168,8 +183,92 @@ app.post('/dashboard', function(req,res){
 	})
 })
 
+app.get('/test', function(req,res){
+	var moqaThread = mongoose.model('moqaThread');
+	moqaThread.find({}, {}, function(e, threads){
+		if (threads.length > 0){
+			console.log(threads[0].threadContent);
+		}
+		res.render('test.jade', {'threads': threads});
+	});
+})
+
+app.post('/test', function(req,res){
+	var id = new mongoose.Types.ObjectId;
+	req.session.threadId = id;
+
+	var thread = new Thread({
+		_id: id,
+		threadId: id,
+		moqaName: req.session.user.moqaName,
+		threadTimeStamp: Date.now(),
+		threadTitle: req.body.threadTitle,
+		threadContent: req.body.threadContent,
+	})
+
+	thread.save(function(err){
+		thread.slug;
+		if(err){
+			var err = 'Something bad happened! Try again!';
+		}
+		else{
+			res.redirect('/test/'+id);
+		}
+	})
+});
+
+app.get('/test/:threadId', function(req,res){
+	var moqaComment = mongoose.model('moqaComment');
+	var activeThread = mongoose.model('moqaThread');
+	
+	activeThread.find({'_id': req.param('threadId')}, {}, function(e, thread){
+		moqaComment.find({'threadId': req.param('threadId')}, {}, function(e, comments){
+		 	if (comments.length > 0){
+				// console.log(comments[0].commentContent);
+		 	}
+			res.render('thread.jade', {'thread': thread, 'comments': comments});
+		});	
+	});
+
+	//Working separately
+	//activeThread.find({'_id': req.param('threadId')}, {}, function(e, thread){
+	// 	res.render('thread.jade', {'thread': thread});
+	//});	
+
+	//moqaComment.find({'threadId': req.param('threadId')}, {}, function(e, comments){
+	// 	if (comments.length > 0){
+			// console.log(comments[0].commentContent);
+	// 	}
+	//	res.render('thread.jade', {'comments': comments});
+	//});	
+});
+
+app.post('/test/:threadId', function(req,res){
+	var threadId = req.params.threadId;
+	var id = new mongoose.Types.ObjectId;
+
+	var comment = new Comment({
+		_id: id,
+		commentId: id,
+		threadId: threadId,
+		moqaName: req.session.user.moqaName,
+		commentTimeStamp: Date.now(),
+		commentContent: req.body.commentContent,
+	})
+	comment.save(function(err){
+		comment.slug;
+		if(err){
+			var err = 'Something bad happened! Try again!';
+		}
+		else{
+			res.redirect('/test/'+threadId);
+		}
+	})
+})
+
 app.get('/logout', function(req,res){
 	req.session.reset();
+
 	res.render('index.jade');
 })
 

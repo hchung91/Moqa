@@ -1,0 +1,29 @@
+extends base
+
+block vars
+  - var title = 'Dashboard'
+
+block body
+  h1 Welcome to the test discussion page!
+  p.
+    Post a new thread here.
+  form(method="post")
+    span Thread Title:
+    input(type="text", name="threadTitle", required=true)
+    br
+    span Thread Content:
+    input(type="text", name="threadContent", required=true)
+    br
+    input(type="submit")
+    br
+
+  p Recent Threads
+  br
+
+  p Recent Threads
+  br
+
+  ul
+    each thread, i in threads
+      li
+        <a href = "/test/#{thread._id}">#{thread.threadTitle}</a>
