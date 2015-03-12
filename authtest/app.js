@@ -11,7 +11,7 @@ var ObjectId = Schema.ObjectId;
 
 //connect to mongo
 var User = mongoose.model('moqaUser', new Schema({
-	moqaName: String,
+	moqaName: {type: String, unique: true},
 	firstName: String,
 	lastName: String,
 	email: {type: String, unique: true},
@@ -132,12 +132,12 @@ app.post('/register', function(req,res){
 	console.log(user)
 	user.save(function(err){
 		if (err){
-			console.log(err)
-			var err = 'Something bad happened! Try again!';
+			console.log(err.code)
+			var error = 'Something bad happened! Try again!';
 			if (err.code === 11000){
-				err = 'That email is already taken.'
+				error = 'ERROR: That email or username is already taken.';
 			}
-			res.render('register.jade', {error: err});
+			res.render('register.jade', {'error': error});
 		}
 		else{
 			res.redirect('/dashboard');
