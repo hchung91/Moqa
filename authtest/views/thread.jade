@@ -9,13 +9,17 @@ block body
   p date: #{thread[0].threadTimeStamp}
   p content: #{thread[0].threadContent}
 
-  form(method="post")
-    span New Comment:
-    input(type="text", name="commentContent", required=true)
-    br
+  if user
+    form(method="post" name="commentForm")
+      input(type="hidden" id="commentParentId" name="commentParentId" value='')
+      span New Comment:
+      input(type="text", name="commentContent", required=true, id="commentContent")
+      br
 
-    input(type="submit")
-    br
+      input(type="submit" value="New Comment" id="submitComment")
+      br
+  else
+    <a href = "/login">login</a> to post comments
 
   p Recent Comments
   br
@@ -24,3 +28,8 @@ block body
     each comment, i in comments
       li
         p #{comment.commentContent}
+        p #{comment.moqaName}  |  reply
+        input(type="text", id = "replyContent#{comment._id}")
+        <button type="button", onClick = 'reply(this)', value = "#{comment._id}">REPLY!</button>
+
+  script(type='text/javascript' src='../public/js/reply.js')

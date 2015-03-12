@@ -31,6 +31,7 @@ var commentSchema = new Schema({
 	_id: ObjectId,
 	threadId: String,
 	commentId: ObjectId,
+	parentComment: String,
 	moqaName: String,
 	commentTimeStamp: Date,
 	commentContent: String,
@@ -38,10 +39,11 @@ var commentSchema = new Schema({
 var Comment = mongoose.model('moqaComment', commentSchema);
 
 
-commentSchema.plugin(slug(['threadId', 'commentId', 'moqaName', 'commentTimeStamp']));
+commentSchema.plugin(slug(['threadId', 'parentComment', 'commentId', 'moqaName', 'commentTimeStamp']));
 threadSchema.plugin(slug(['threadId', 'moqaName', 'threadTimeStamp']));
 
 var app = express();
+app.use(express.static(__dirname+'/'));
 app.set('view engine', 'jade');
 app.locals.pretty = true;
 
@@ -90,10 +92,18 @@ function requireLogin(req, res, next){
 	}
 };
 
-
+//if logged in: redirect to dashboard
+function dashboardRedirect(req, res, next){
+	if(req.user){
+		res.redirect('/dashboard');
+	}
+	else{
+		next();
+	}
+}
 
 // VIEWS
-app.get('/', function(req,res){
+app.get('/', function(req, res){
 	//res.render('index.jade', {csrfToken: req.csrfToken()});
 	res.render('index.jade');
 });
@@ -118,6 +128,11 @@ app.post('/login', function(req,res){
 		}
 	});
 });
+
+app.get('/login', dashboardRedirect, function(req,res){
+	//res.render('login.jade', {csrfToken: req.csrfToken()});
+	res.render('login.jade');
+})
 
 app.post('/register', function(req,res){
 	var hash = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
@@ -144,11 +159,6 @@ app.post('/register', function(req,res){
 		}
 	})
 });
-
-app.get('/login', function(req,res){
-	//res.render('login.jade', {csrfToken: req.csrfToken()});
-	res.render('login.jade');
-})
 
 app.get('/dashboard', requireLogin, function(req,res){
 	//console.log(req.session.threadId)
@@ -217,6 +227,8 @@ app.post('/test', function(req,res){
 	})
 });
 
+//Known Working get Function for /test/:threadId
+/**
 app.get('/test/:threadId', function(req,res){
 	var moqaComment = mongoose.model('moqaComment');
 	var activeThread = mongoose.model('moqaThread');
@@ -229,19 +241,21 @@ app.get('/test/:threadId', function(req,res){
 			res.render('thread.jade', {'thread': thread, 'comments': comments});
 		});	
 	});
-
-	//Working separately
-	//activeThread.find({'_id': req.param('threadId')}, {}, function(e, thread){
-	// 	res.render('thread.jade', {'thread': thread});
-	//});	
-
-	//moqaComment.find({'threadId': req.param('threadId')}, {}, function(e, comments){
-	// 	if (comments.length > 0){
-			// console.log(comments[0].commentContent);
-	// 	}
-	//	res.render('thread.jade', {'comments': comments});
-	//});	
 });
+**/
+
+//Experimental
+app.get('/test/:threadId', function(req,res){
+	var moqaComment = mongoose.model('moqaComment');
+	var activeThread = mongoose.model('moqaThread');
+	
+	activeThread.find({'_id': req.param('threadId')}, {}, function(e, thread){
+		moqaComment.find({'threadId': req.param('threadId'), 'parentComment': ''}, {}, function(e, comments){
+			res.render('thread.jade', {'thread': thread, 'comments': comments});
+		});	
+	});
+});
+
 
 app.post('/test/:threadId', function(req,res){
 	var threadId = req.params.threadId;
@@ -249,6 +263,7 @@ app.post('/test/:threadId', function(req,res){
 
 	var comment = new Comment({
 		_id: id,
+		parentComment: req.body.commentParentId,
 		commentId: id,
 		threadId: threadId,
 		moqaName: req.session.user.moqaName,
