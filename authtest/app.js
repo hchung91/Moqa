@@ -30,11 +30,12 @@ var Thread = mongoose.model('moqaThread', threadSchema);
 var commentSchema = new Schema({
 	_id: ObjectId,
 	threadId: String,
-	commentId: ObjectId,
+	commentId: String,
 	parentComment: String,
 	moqaName: String,
 	commentTimeStamp: Date,
 	commentContent: String,
+	fullSlug: String,
 });
 var Comment = mongoose.model('moqaComment', commentSchema);
 
@@ -228,57 +229,53 @@ app.post('/test', function(req,res){
 });
 
 //Known Working get Function for /test/:threadId
-/**
-app.get('/test/:threadId', function(req,res){
-	var moqaComment = mongoose.model('moqaComment');
-	var activeThread = mongoose.model('moqaThread');
-	
-	activeThread.find({'_id': req.param('threadId')}, {}, function(e, thread){
-		moqaComment.find({'threadId': req.param('threadId')}, {}, function(e, comments){
-		 	if (comments.length > 0){
-				// console.log(comments[0].commentContent);
-		 	}
-			res.render('thread.jade', {'thread': thread, 'comments': comments});
-		});	
-	});
-});
-**/
+//Known Working get Function for /test/:threadId
 
-//Experimental
 app.get('/test/:threadId', function(req,res){
 	var moqaComment = mongoose.model('moqaComment');
 	var activeThread = mongoose.model('moqaThread');
 	
 	activeThread.find({'_id': req.param('threadId')}, {}, function(e, thread){
-		moqaComment.find({'threadId': req.param('threadId'), 'parentComment': ''}, {}, function(e, comments){
+		moqaComment.find({'threadId': req.param('threadId')}).sort({fullSlug:1,commentTimeStamp:1}).exec(function(e, comments){
 			res.render('thread.jade', {'thread': thread, 'comments': comments});
 		});	
 	});
 });
+
+
 
 
 app.post('/test/:threadId', function(req,res){
 	var threadId = req.params.threadId;
 	var id = new mongoose.Types.ObjectId;
-
-	var comment = new Comment({
-		_id: id,
-		parentComment: req.body.commentParentId,
-		commentId: id,
-		threadId: threadId,
-		moqaName: req.session.user.moqaName,
-		commentTimeStamp: Date.now(),
-		commentContent: req.body.commentContent,
-	})
-	comment.save(function(err){
-		comment.slug;
-		if(err){
-			var err = 'Something bad happened! Try again!';
+	var moqaComment = mongoose.model('moqaComment');
+	moqaComment.findOne({'commentId': req.body.commentParentId}, {}, function(e, comments){
+		var fullSlug = id.toString();
+		if(comments != null){
+			console.log(comments);
+			fullSlug = comments.fullSlug +'/'+ fullSlug;
 		}
-		else{
-			res.redirect('/test/'+threadId);
-		}
-	})
+		var comment = new Comment({
+			_id: id,
+			parentComment: req.body.commentParentId,
+			commentId: id.toString(),
+			threadId: threadId,
+			moqaName: req.session.user.moqaName,
+			commentTimeStamp: Date.now(),
+			commentContent: req.body.commentContent,
+			fullSlug : fullSlug,
+			
+		})
+		comment.save(function(err){
+			comment.slug;
+			if(err){
+				var err = 'Something bad happened! Try again!';
+			}
+			else{
+				res.redirect('/test/'+threadId);
+			}
+		})
+	});
 })
 
 app.get('/logout', function(req,res){
