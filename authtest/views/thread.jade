@@ -2,6 +2,7 @@ extends base
 
 block vars
   - var title = 'thread'
+  - var containerColor = ''
 
 block body
   h1 title: #{thread[0].threadTitle}
@@ -26,10 +27,20 @@ block body
 
   ul
     each comment, i in comments
-      li
+      
+      if comment.fullSlug.split('/').length % 2 == 1
+        -var containerColor = 'f3f3f3'
+      else
+        - var containerColor = 'ffffff'
+      div(style="margin-left:#{(comment.fullSlug.split('/').length-2)*40+10}px; margin-bottom: -1px; background:##{containerColor}; padding:1px 1px 1px 30px; border: 1px solid #dfdfdf")
+        p(style = "color:#8b8b8b") <a style = "font-weight:bold">#{comment.moqaName}</a> / #{comment.score} pt
         p #{comment.commentContent}
-        p #{comment.moqaName}  |  reply
-        input(type="text", id = "replyContent#{comment._id}")
-        <button type="button", onClick = 'reply(this)', value = "#{comment._id}">REPLY!</button>
+        if user
+          p <button type = "button", onClick = 'showReplyBox(this)', id = "triggerReply_#{comment._id}", style = "background:none; border:none; padding:0; font:inherit; border-bottom: 1px solid #444; cursor: pointer;" value = "#{comment._id}">reply</button> | <button type = "button", id = "upvote_#{comment._id}", style = "background:none; border:none; padding:0; font:inherit; color: #ff7800; cursor: pointer;" value = "#{comment._id}">upvote</button>    <button type = "button", id = "downvote_#{comment._id}", style = "background:none; border:none; padding:0; font:inherit; color: #007eff; cursor: pointer;" value = "#{comment._id}">downvote</button>
+
+
+      div(id="div#{comment._id}")
+
 
   script(type='text/javascript' src='../public/js/reply.js')
+  script(type='text/javascript' src='../public/js/showReplyBox.js')

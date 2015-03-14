@@ -1,0 +1,6 @@
+recurse ( comment )
+push comment
+get children of comment, if none return
+sort children by rank
+for child in children
+recurse( child)

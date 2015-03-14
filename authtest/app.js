@@ -36,6 +36,7 @@ var commentSchema = new Schema({
 	commentTimeStamp: Date,
 	commentContent: String,
 	fullSlug: String,
+	score: Number,
 });
 var Comment = mongoose.model('moqaComment', commentSchema);
 
@@ -247,14 +248,15 @@ app.get('/test/:threadId', function(req,res){
 
 app.post('/test/:threadId', function(req,res){
 	var threadId = req.params.threadId;
-	var id = new mongoose.Types.ObjectId;
 	var moqaComment = mongoose.model('moqaComment');
+	var id = new mongoose.Types.ObjectId;
+	
 	moqaComment.findOne({'commentId': req.body.commentParentId}, {}, function(e, comments){
-		var fullSlug = id.toString();
+		var fullSlug = id;
 		if(comments != null){
-			console.log(comments);
 			fullSlug = comments.fullSlug +'/'+ fullSlug;
 		}
+
 		var comment = new Comment({
 			_id: id,
 			parentComment: req.body.commentParentId,
@@ -264,7 +266,7 @@ app.post('/test/:threadId', function(req,res){
 			commentTimeStamp: Date.now(),
 			commentContent: req.body.commentContent,
 			fullSlug : fullSlug,
-			
+			score: 1,		
 		})
 		comment.save(function(err){
 			comment.slug;
