@@ -1,20 +1,57 @@
+html *
+{
+   	font-family: sans-serif;
+   	font-weight: 300;
+}
+
+p{
+	font-size: .85em;
+}
+
+h1{
+	font-size: 1.7em;
+}
+
+h2{
+	font-size: 1.3em;
+}
+
 .commentLevelOdd{
 	margin-bottom: 3px; 
 	background:#f3f3f3; 
 	padding:1px 1px 1px 20px; 
-	border: 1px solid #dfdfdf
+	border: 1px solid #dfdfdf;
 }
 
 .commentLevelEven{
 	margin-bottom: 3px; 
 	background:#ffffff; 
 	padding:1px 1px 1px 20px; 
-	border: 1px solid #dfdfdf
+	border: 1px solid #dfdfdf;
 }
 
 .commentLevelSuper{
 	margin-bottom: 20px; 
 	background:#f3f3f3;
 	padding:1px 1px 1px 20px; 
-	border: 1px solid #dfdfdf
+	border: 1px solid #dfdfdf;
+}
+
+.threadTitle{
+	margin-bottom: -10px;
+	color: #474747;
+}
+
+.threadOpInfo{
+	color: #7c7c7c;
+}
+
+.threadContent{
+	max-width: 700px;
+	margin-bottom: 10px; 
+	color: #a05b23;
+	background:#feffd3; 
+	padding-left: 15px;
+	border: 1px solid #def176;
+	border-radius: 10px;
 }
