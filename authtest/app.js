@@ -23,7 +23,8 @@ var threadSchema = new Schema({
 	moqaName: String,
 	threadTitle: String,
 	threadContent: String,
-	threadTimeStamp: Date,
+	threadDate: String,
+	threadTimeStamp: String,
 });
 var Thread = mongoose.model('moqaThread', threadSchema);
 
@@ -33,7 +34,8 @@ var commentSchema = new Schema({
 	commentId: String,
 	parentComment: String,
 	moqaName: String,
-	commentTimeStamp: Date,
+	commentDate: String,
+	commentTimeStamp: String,
 	commentContent: String,
 	fullSlug: String,
 	score: Number,
@@ -181,7 +183,8 @@ app.post('/dashboard', function(req,res){
 		commentId: id,
 		threadId: 1,
 		moqaName: req.session.user.moqaName,
-		commentTimeStamp: Date.now(),
+		commentTimeStamp: new Date().getTime(),
+		commentDate: new Date(),
 		commentContent: req.body.commentContent,
 	})
 	comment.save(function(err){
@@ -213,7 +216,8 @@ app.post('/test', function(req,res){
 		_id: id,
 		threadId: id,
 		moqaName: req.session.user.moqaName,
-		threadTimeStamp: Date.now(),
+		threadTimeStamp: new Date().getTime(),
+		threadDate: new Date(),
 		threadTitle: req.body.threadTitle,
 		threadContent: req.body.threadContent,
 	})
@@ -263,7 +267,8 @@ app.post('/test/:threadId', function(req,res){
 			commentId: id.toString(),
 			threadId: threadId,
 			moqaName: req.session.user.moqaName,
-			commentTimeStamp: Date.now(),
+			commentDate: new Date(),
+			commentTimeStamp: new Date().getTime(),
 			commentContent: req.body.commentContent,
 			fullSlug : fullSlug,
 			score: 1,		
@@ -278,6 +283,24 @@ app.post('/test/:threadId', function(req,res){
 			}
 		})
 	});
+})
+
+//Need to add validation and redirect to threadpage
+app.put('/test', function(req,res){
+	var id = req.param('comment');
+	console.log(id)
+	var vote = req.param('vote');
+	var moqaComment = mongoose.model('moqaComment');
+	if (vote === 'upvote'){
+		moqaComment.update({'commentId': id}, {$inc:{quantity:1, "score":1}}, function(err){
+			console.log('updated');
+		});
+	}
+	else{
+		moqaComment.update({'commentId': id}, {$inc:{quantity:1, "score":-1}}, function(err){
+			console.log('updated');
+		});
+	}
 })
 
 app.get('/logout', function(req,res){

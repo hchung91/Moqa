@@ -1,0 +1,20 @@
+.commentLevelOdd{
+	margin-bottom: 3px; 
+	background:#f3f3f3; 
+	padding:1px 1px 1px 20px; 
+	border: 1px solid #dfdfdf
+}
+
+.commentLevelEven{
+	margin-bottom: 3px; 
+	background:#ffffff; 
+	padding:1px 1px 1px 20px; 
+	border: 1px solid #dfdfdf
+}
+
+.commentLevelSuper{
+	margin-bottom: 20px; 
+	background:#f3f3f3;
+	padding:1px 1px 1px 20px; 
+	border: 1px solid #dfdfdf
+}

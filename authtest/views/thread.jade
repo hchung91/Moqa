@@ -22,21 +22,32 @@ block body
   else
     <a href = "/login">login</a> to post comments
 
-  p Recent Comments
-  br
+  script(type='text/javascript' src='../public/js/thread.js')
 
-  ul
-    each comment, i in comments
-      
-      if comment.fullSlug.split('/').length % 2 == 1
-        -var containerColor = 'f3f3f3'
-      else
-        - var containerColor = 'ffffff'
-      div(style="margin-left:#{(comment.fullSlug.split('/').length-2)*40+10}px; margin-bottom: -1px; background:##{containerColor}; padding:1px 1px 1px 30px; border: 1px solid #dfdfdf")
-        p(style = "color:#8b8b8b") <a style = "font-weight:bold">#{comment.moqaName}</a> / #{comment.score} pt
-        p #{comment.commentContent}
-        if user
-          p <button type = "button", onClick = 'showReplyBox(this)', id = "triggerReply_#{comment._id}", style = "background:none; border:none; padding:0; font:inherit; border-bottom: 1px solid #444; cursor: pointer;" value = "#{comment._id}">reply</button> | <button type = "button", id = "upvote_#{comment._id}", style = "background:none; border:none; padding:0; font:inherit; color: #ff7800; cursor: pointer;" value = "#{comment._id}">upvote</button>    <button type = "button", id = "downvote_#{comment._id}", style = "background:none; border:none; padding:0; font:inherit; color: #007eff; cursor: pointer;" value = "#{comment._id}">downvote</button>
+  p(style="font-weight:bold") Recent Comments:
+  if user
+    div
+      script.
+        renderThread(!{JSON.stringify(comments)}, 'loggedIn')
+  else
+    div
+      script.
+        renderThread(!{JSON.stringify(comments)}, 'loggedOut')
+
+
+  //-
+    ul
+      each comment, i in comments
+        
+        if comment.fullSlug.split('/').length % 2 == 1
+          -var containerColor = 'f3f3f3'
+        else
+          - var containerColor = 'ffffff'
+        div(style="margin-left:#{(comment.fullSlug.split('/').length-2)*40+10}px; margin-bottom: -1px; background:##{containerColor}; padding:1px 1px 1px 30px; border: 1px solid #dfdfdf")
+          p(style = "color:#8b8b8b") <a style = "font-weight:bold">#{comment.moqaName}</a> / #{comment.score} pt
+          p #{comment.commentContent}
+          if user
+            p <button type = "button", onClick = 'showReplyBox(this)', id = "triggerReply_#{comment._id}", style = "background:none; border:none; padding:0; font:inherit; border-bottom: 1px solid #444; cursor: pointer;" value = "#{comment._id}">reply</button> | <button type = "button", id = "upvote_#{comment._id}", style = "background:none; border:none; padding:0; font:inherit; color: #ff7800; cursor: pointer;" value = "#{comment._id}", onclick = 'upvote(this)'>upvote</button>    <button type = "button", id = "downvote_#{comment._id}", style = "background:none; border:none; padding:0; font:inherit; color: #007eff; cursor: pointer;" value = "#{comment._id}", onclick = 'downvote(this)'>downvote</button>
 
 
       div(id="div#{comment._id}")
@@ -44,3 +55,6 @@ block body
 
   script(type='text/javascript' src='../public/js/reply.js')
   script(type='text/javascript' src='../public/js/showReplyBox.js')
+  script(type='text/javascript' src='../public/js/upvote.js')
+  script(type='text/javascript' src='../public/js/downvote.js')
+  
