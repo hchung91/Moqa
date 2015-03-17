@@ -1,5 +1,5 @@
 function downvote(comment){
-	console.log('downvote clicked');
+	//console.log('downvote clicked');
 	var id = comment.value;
 	var parameters = {comment: id, vote: 'downvote'};
 	$.ajax({
@@ -8,5 +8,5 @@ function downvote(comment){
 	    url: "/test", // A valid URL
 	    data: parameters, // Some data e.g. Valid JSON as a string
 	});
-	console.log('downvote executed')	
+	//console.log('downvote executed')	
 }

@@ -41,15 +41,20 @@ block body
 
   script(type='text/javascript' src='../public/js/thread.js')
 
-  p(style="font-weight:bold") Recent Comments:
-  if user
-    div
-      script.
-        renderThread(!{JSON.stringify(comments)}, 'loggedIn')
-  else
-    div
-      script.
-        renderThread(!{JSON.stringify(comments)}, 'loggedOut')
+  p(style="font-weight:bold"). 
+    Recent Comments: 
+
+  <a>Sort by:</a>
+  select(onChange = "sort(this, '')")
+    option(value=0) Top Score 
+    option(value=1) New 
+    option(value=2) Old
+  br
+  br
+
+  div(id = "commentContentSection")
+    script.
+      renderThread(!{JSON.stringify(comments)}, '', false, highestScore)
 
 
   //-

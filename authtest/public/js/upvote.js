@@ -1,5 +1,5 @@
 function upvote(comment){
-	console.log('upvote clicked');
+	//console.log('upvote clicked');
 	var id = comment.value;
 	var parameters = {comment: id, vote: 'upvote'};
 	$.ajax({
@@ -8,5 +8,5 @@ function upvote(comment){
 	    url: "/test", // A valid URL
 	    data: parameters, // Some data e.g. Valid JSON as a string
 	});
-	console.log('upvote executed')	
+	//console.log('upvote executed')	
 }

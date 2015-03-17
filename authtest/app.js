@@ -303,6 +303,15 @@ app.put('/test', function(req,res){
 	}
 })
 
+app.get('/validateSession', function(req,res){
+	if(req.user){
+		res.json({loggedIn: true})
+	}
+	else{
+		res.json({loggedIn: false})
+	}
+})
+
 app.get('/logout', function(req,res){
 	req.session.reset();
 
