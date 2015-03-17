@@ -1,4 +1,6 @@
 function showReplyBox(trigger){
+	$(".hiddenReplyBox").empty()
+	
 	var id = trigger.value;
 	var input = document.createElement("input");
 	input.type = "text";

@@ -30,7 +30,7 @@ function renderThread(comments, status){
 				'<p>'+sortedList[i].commentContent+'</p>');	
 			if(status == 'loggedIn'){			
 				document.write('<p><button type = "button", onClick = \'showReplyBox(this)\', id = "triggerReply_'+sortedList[i]._id+'", style = "background:none; border:none; padding:0; font:inherit; border-bottom: 1px solid #444; cursor: pointer;" value = "'+sortedList[i]._id+'">reply</button> | <button type = "button", id = "upvote_'+sortedList[i]._id+'",  style = "background:none; border:none; padding:0; font:inherit; color: #ff7800; cursor: pointer;" value = "'+sortedList[i]._id+'", onclick = \'upvote(this); this.onclick=null;\'>upvote</button>  <button type = "button", id = "downvote_'+sortedList[i]._id+'", style = "background:none; border:none; padding:0; font:inherit; color: #007eff; cursor: pointer;" value = "'+sortedList[i]._id+'", onclick = \'downvote(this); this.onclick=null;\'>downvote</button></p>');
-				document.write('<a id = "div'+sortedList[i]._id+'"></a>');
+				document.write('<div class = "hiddenReplyBox" id = "div'+sortedList[i]._id+'"></div>');
 			}
 
 			previousLevel = level;
@@ -61,7 +61,7 @@ function renderThread(comments, status){
 				'<p>'+sortedList[i].commentContent+'</p>');				
 			if(status == 'loggedIn'){			
 				document.write('<p><button type = "button", onClick = \'showReplyBox(this)\', id = "triggerReply_'+sortedList[i]._id+'", style = "background:none; border:none; padding:0; font:inherit; border-bottom: 1px solid #444; cursor: pointer;" value = "'+sortedList[i]._id+'">reply</button> | <button type = "button", id = "upvote_'+sortedList[i]._id+'",  style = "background:none; border:none; padding:0; font:inherit; color: #ff7800; cursor: pointer;" value = "'+sortedList[i]._id+'", onclick = \'upvote(this); this.onclick=null;\'>upvote</button>  <button type = "button", id = "downvote_'+sortedList[i]._id+'", style = "background:none; border:none; padding:0; font:inherit; color: #007eff; cursor: pointer;" value = "'+sortedList[i]._id+'", onclick = \'downvote(this); this.onclick=null;\'>downvote</button></p>');
-				document.write('<a id = "div'+sortedList[i]._id+'"></a>');
+				document.write('<div class = "hiddenReplyBox" id = "div'+sortedList[i]._id+'"></div>');
 			}
 
 			previousLevel = level;
