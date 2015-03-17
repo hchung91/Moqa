@@ -10,6 +10,7 @@ p{
 
 h1{
 	font-size: 1.7em;
+	font-weight: bold;
 }
 
 h2{
@@ -17,23 +18,25 @@ h2{
 }
 
 .commentLevelOdd{
-	margin-bottom: 3px; 
+	margin-bottom: 4px; 
+	margin-top:3px;
 	background:#f3f3f3; 
-	padding:1px 1px 1px 20px; 
+	padding:1px 10px 1px 20px; 
 	border: 1px solid #dfdfdf;
 }
 
 .commentLevelEven{
-	margin-bottom: 3px; 
+	margin-bottom: 4px; 
+	margin-top:3px;
 	background:#ffffff; 
-	padding:1px 1px 1px 20px; 
+	padding:1px 10px 1px 20px; 
 	border: 1px solid #dfdfdf;
 }
 
 .commentLevelSuper{
 	margin-bottom: 20px; 
 	background:#f3f3f3;
-	padding:1px 1px 1px 20px; 
+	padding:1px 10px 1px 20px; 
 	border: 1px solid #dfdfdf;
 }
 
@@ -54,4 +57,39 @@ h2{
 	padding-left: 15px;
 	border: 1px solid #def176;
 	border-radius: 10px;
+}
+
+.replyButton{
+	background:none; 
+	border:none; 
+	padding:0; 
+	font:inherit; 
+	font-weight: bold;
+	color: #666666;
+	cursor: pointer;
+}
+
+.upvoteButton{
+	background:none; 
+	border:none; 
+	padding:0; 
+	font:inherit; 
+	font-weight: bold;
+	color: #ff7800; 
+	cursor: pointer;
+}
+
+.downvoteButton{
+	background:none; 
+	border:none; 
+	padding:0; 
+	font:inherit; 
+	font-weight: bold;
+	color: #007eff; 
+	cursor: pointer;
+}
+
+.commentSortButton{
+	background: none;
+	border: none;
 }
