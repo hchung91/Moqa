@@ -13,6 +13,15 @@ function renderThread(comments, parentCommentId, changeSortOrder, sortMethod){
 
 	for (i = 0; i < sortedList.length; i++){
 		var level = sortedList[i].fullSlug.split('/').length;
+		var hasChild = 0;
+		for(j = 0; j < sortedList.length; j++){
+			if(hasChild > 1)
+				break;
+			if(sortedList[j].parentComment == sortedList[i].commentId)
+				hasChild++;
+		}
+		//hasChild == 2, more than 1 child comment
+		
 		if(level-previousLevel > 0){
 			if (level == 1){
 				styleClass = 'Super';
@@ -26,7 +35,7 @@ function renderThread(comments, parentCommentId, changeSortOrder, sortMethod){
 			basicCommentHTML(styleClass, sortedList[i].commentId, margin, sortedList[i].moqaName, sortedList[i].score, sortedList[i].commentDate, sortedList[i].commentContent);	
 			//console.log(sortedList[i].commentId)
 			if(logInStatus == true){			
-				loggedInComment(sortedList[i]._id, sortedList[i].commentId);	
+				loggedInComment(sortedList[i]._id, sortedList[i].commentId, hasChild);	
 			}
 
 			previousLevel = level;
@@ -60,7 +69,7 @@ function renderThread(comments, parentCommentId, changeSortOrder, sortMethod){
 			basicCommentHTML(styleClass, sortedList[i].commentId, margin, sortedList[i].moqaName, sortedList[i].score, sortedList[i].commentDate, sortedList[i].commentContent);
 		
 			if(logInStatus == true){		
-				loggedInComment(sortedList[i]._id, sortedList[i].commentId);	
+				loggedInComment(sortedList[i]._id, sortedList[i].commentId, hasChild);	
 			}
 
 			previousLevel = level;
@@ -260,7 +269,7 @@ function basicCommentHTML(divClass, commentId, margin, moqaName, score, timeStam
 	htmlContent+=('</p>'+'<p>'+commentContent+'</p>');	
 }
 
-function loggedInComment(id, parentComment){
+function loggedInComment(id, parentComment, hasChild){
 	//upvote
 	htmlContent+=('<p><button type = "button", id = "upvote_'+id+'",');
 	htmlContent+=(' class = "upvoteButton"');
@@ -281,15 +290,18 @@ function loggedInComment(id, parentComment){
 	htmlContent+= (id);
 	htmlContent+=('">reply</button> ');
 	console.log(parentComment.toString());
-	console.log(numChildren(parentComment).toString());
+	//console.log(numChildren(parentComment).toString());
+	console.log("parent comment is " + parentComment);
 	//sort option
-	htmlContent += (' &nbsp|&nbsp Sort children by:')
-	htmlContent += ('<select onchange="sort(this,\''+id+'\')" id = "childSort'+id+'" class = "commentSortButton">');
-	htmlContent += ('<option value = "0">Top Score</option>');
-	htmlContent += ('<option value = "1">New</option>');
-	htmlContent += ('<option value = "2">Old</option>');
-	htmlContent += ('</select>');
-
+	console.log('hasChild is ' + hasChild);
+	if(hasChild > 1){
+		htmlContent += (' &nbsp|&nbsp Sort children by:')
+		htmlContent += ('<select onchange="sort(this,\''+id+'\')" id = "childSort'+id+'" class = "commentSortButton">');
+		htmlContent += ('<option value = "0">Top Score</option>');
+		htmlContent += ('<option value = "1">New</option>');
+		htmlContent += ('<option value = "2">Old</option>');
+		htmlContent += ('</select>');
+	}
 	//hidden replybox placeholder
 	htmlContent+=('</p><a class = "hiddenReplyBox" id = "div'+id+'"></a>');	
 }
