@@ -25,7 +25,7 @@ function renderThread(comments, parentCommentId, changeSortOrder, sortMethod){
 			}
 			basicCommentHTML(styleClass, sortedList[i].commentId, margin, sortedList[i].moqaName, sortedList[i].score, sortedList[i].commentDate, sortedList[i].commentContent);	
 			//console.log(sortedList[i].commentId)
-			if(logInStatus === true){			
+			if(logInStatus == true){			
 				loggedInComment(sortedList[i]._id, sortedList[i].commentId);	
 			}
 
@@ -59,7 +59,7 @@ function renderThread(comments, parentCommentId, changeSortOrder, sortMethod){
 
 			basicCommentHTML(styleClass, sortedList[i].commentId, margin, sortedList[i].moqaName, sortedList[i].score, sortedList[i].commentDate, sortedList[i].commentContent);
 		
-			if(logInStatus === true){		
+			if(logInStatus == true){		
 				loggedInComment(sortedList[i]._id, sortedList[i].commentId);	
 			}
 
@@ -87,7 +87,7 @@ var children = [];
 var allComments = [];
 
 function sortComments(comment , comparator, commentStack){
-	if (commentStack == [] || comment === undefined){
+	if (commentStack == [] || comment == undefined){
 		return;
 	}
 
@@ -110,6 +110,17 @@ function getChildren(comment, comparator){
 	}
 	tempArray = tempArray.sort(comparator);
 	return tempArray;
+}
+
+function numChildren(commentId){
+	//find Children of comment
+	tempArray = [];
+	for (i = 0; i < allComments.length; i = i+1){
+		if (allComments[i].parentComment == commentId){
+			tempArray.push(allComments[i]);
+		}
+	}
+	return tempArray.length;
 }
 
 function findParents(comments, parentCommentId, comparator, callback){
@@ -182,17 +193,20 @@ function sort(dropdown, parentCommentId){
 	}
 	else{
 		container = 'commentContent'+parentCommentId;
-		removeDiVChildren(container,function(){});
+		removeDivChildren(container);
 
 		sortType = dropdown.value;
 		if (sortType == 0){
-			document.getElementById(container).innerHTML = renderThread(allComments, parentCommentId, true, highestScore);
+			document.getElementById(container).innerHTML += renderThread(allComments, parentCommentId, true, highestScore);
+			document.getElementById('childSort'+parentCommentId).value = 0;
 		}
 		else if (sortType == 1){
-			document.getElementById(container).innerHTML = renderThread(allComments, parentCommentId, true, newestFirst);
+			document.getElementById(container).innerHTML += renderThread(allComments, parentCommentId, true, newestFirst);
+			document.getElementById('childSort'+parentCommentId).value = 1;
 		}
 		else if (sortType == 2){
-			document.getElementById(container).innerHTML = renderThread(allComments, parentCommentId, true, oldestFirst);
+			document.getElementById(container).innerHTML += renderThread(allComments, parentCommentId, true, oldestFirst);
+			document.getElementById('childSort'+parentCommentId).value = 2;
 		}
 	}
 }
@@ -265,31 +279,35 @@ function loggedInComment(id, parentComment){
 	htmlContent+=('", class = "replyButton"');
 	htmlContent+=('value = "');
 	htmlContent+= (id);
-	htmlContent+=('">reply</button> &nbsp|&nbsp');
-
+	htmlContent+=('">reply</button> ');
+	console.log(parentComment.toString());
+	console.log(numChildren(parentComment).toString());
 	//sort option
-	htmlContent += (' Sort children by:')
-	htmlContent += ('<select onchange="sort(this,\'\')" class = "commentSortButton">');
+	htmlContent += (' &nbsp|&nbsp Sort children by:')
+	htmlContent += ('<select onchange="sort(this,\''+id+'\')" id = "childSort'+id+'" class = "commentSortButton">');
 	htmlContent += ('<option value = "0">Top Score</option>');
 	htmlContent += ('<option value = "1">New</option>');
 	htmlContent += ('<option value = "2">Old</option>');
-	htmlContent += ('</select></p>');
+	htmlContent += ('</select>');
 
 	//hidden replybox placeholder
-	htmlContent+=('<a class = "hiddenReplyBox" id = "div'+id+'"></a>');
+	htmlContent+=('</p><a class = "hiddenReplyBox" id = "div'+id+'"></a>');	
 }
 
-function removeDivChildren(containerId, callback) {
-    var div = document.getElementById(containerId);
-	var subDiv = div.getElementsByTagName('div');
+function removeDivChildren(containerId) {
+    var parentDiv = document.getElementById(containerId);
+    var subDiv = parentDiv.getElementsByTagName('div');
+    var subDivLength = subDiv.length;
 
-    console.log(subDiv.length);
-    myArray = [];
+    //console.log('subDiv length: '+subDiv.length);
 
-    for(i = 0; i < subDiv.length; i++) {
-        var elem = subDiv[i];
+    while(subDivLength>0) {
+        var elem = subDiv[0];
         var div = document.getElementById(elem.id);
-        div.parentNode.removeChild(div);
+        div.remove();
+        subDivLength = parentDiv.getElementsByTagName('div').length;
     }
-    callback();
 }
+
+//commentContent5507a11ed1ff7a900e9095d2
+//commentContent5507a3e9d1ff7a900e9095d5
