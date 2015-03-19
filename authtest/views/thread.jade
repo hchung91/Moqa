@@ -43,9 +43,9 @@ block body
 
   p(style="font-weight:bold"). 
     Recent Comments: 
-
+  div(style="visibility:hidden", id = "replyDiv", value="1")
   <a>Sort by:</a>
-  select(onChange = "sort(this, '')")
+  select(onChange = "sort(this, '')", id = "mainSort")
     option(value=0) Top Score 
     option(value=1) New 
     option(value=2) Old

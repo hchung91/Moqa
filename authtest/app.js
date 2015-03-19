@@ -117,6 +117,7 @@ app.get('/register', function(req,res){
 })
 
 app.post('/login', function(req,res){
+	console.log('last thread was: '+req.session.lastPage);
 	User.findOne({email:req.body.email}, function(err, user){
 		if (!user){
 			res.render('login.jade', {error: 'Invalid email or password!'})
@@ -124,7 +125,10 @@ app.post('/login', function(req,res){
 		else{
 			if (bcrypt.compareSync(req.body.password, user.password)){
 				req.session.user = user;
-				res.redirect('/dashboard')
+				if(req.session.lastPage)				
+					res.redirect('/test/'+req.session.lastPage);
+				else
+					res.redirect('/dashboard');
 			}
 			else{
 				res.render('login.jade', {error: 'Invalid email or password!'})
@@ -239,6 +243,8 @@ app.post('/test', function(req,res){
 app.get('/test/:threadId', function(req,res){
 	var moqaComment = mongoose.model('moqaComment');
 	var activeThread = mongoose.model('moqaThread');
+
+	req.session.lastPage = req.params.threadId;
 	
 	activeThread.find({'_id': req.param('threadId')}, {}, function(e, thread){
 		moqaComment.find({'threadId': req.param('threadId')}).sort({fullSlug:1,commentTimeStamp:1}).exec(function(e, comments){
@@ -287,19 +293,57 @@ app.post('/test/:threadId', function(req,res){
 
 //Need to add validation and redirect to threadpage
 app.put('/test', function(req,res){
-	var id = req.param('comment');
-	console.log(id)
-	var vote = req.param('vote');
+
+	var action = req.param('action');
 	var moqaComment = mongoose.model('moqaComment');
-	if (vote === 'upvote'){
+
+	if (action == 'upvote'){
 		moqaComment.update({'commentId': id}, {$inc:{quantity:1, "score":1}}, function(err){
 			console.log('updated');
 		});
 	}
-	else{
+	else if (action == 'downvote'){
+		var id = req.param('comment');
 		moqaComment.update({'commentId': id}, {$inc:{quantity:1, "score":-1}}, function(err){
 			console.log('updated');
 		});
+	}
+	else if (action == 'reply'){
+		var commentContent = req.param('commentContent');
+		var parentId = req.param('parentId');
+		var threadId = req.session.lastPage;
+		var moqaComment = mongoose.model('moqaComment');
+		var id = new mongoose.Types.ObjectId;
+		
+		moqaComment.findOne({'commentId': parentId}, {}, function(e, comments){
+			var fullSlug = id;
+			if(comments != null){
+				fullSlug = comments.fullSlug +'/'+ fullSlug;
+			}
+
+			var comment = new Comment({
+				_id: id,
+				parentComment: parentId,
+				commentId: id.toString(),
+				threadId: threadId,
+				moqaName: req.session.user.moqaName,
+				commentDate: new Date(),
+				commentTimeStamp: new Date().getTime(),
+				commentContent: commentContent,
+				fullSlug : fullSlug,
+				score: 1,		
+			})
+			comment.save(function(err){
+				comment.slug;
+				if(err){
+					var err = 'Something bad happened! Try again!';
+				}
+				else{
+					res.json(comment);
+				}
+			})
+		});
+
 	}
 })
 

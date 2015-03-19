@@ -1,6 +1,6 @@
 function renderThread(comments, parentCommentId, changeSortOrder, sortMethod){
 	logInStatus = logInCheck();
-	console.log(logInStatus);
+	//console.log(logInStatus);
 	htmlContent = '';
 	allComments = comments;
 	//sortComments(allComments[0]);
@@ -181,8 +181,8 @@ function timePassed(date){
 }
 
 function sort(dropdown, parentCommentId){
-	console.log(parentCommentId);
-	console.log('sort executed');
+	//console.log(parentCommentId);
+	//console.log('sort executed');
 	sortedList = [];
 	
 	if (parentCommentId == ''){
@@ -289,11 +289,11 @@ function loggedInComment(id, parentComment, hasChild){
 	htmlContent+=('value = "');
 	htmlContent+= (id);
 	htmlContent+=('">reply</button> ');
-	console.log(parentComment.toString());
+	//console.log(parentComment.toString());
 	//console.log(numChildren(parentComment).toString());
-	console.log("parent comment is " + parentComment);
+	//console.log("parent comment is " + parentComment);
 	//sort option
-	console.log('hasChild is ' + hasChild);
+	//console.log('hasChild is ' + hasChild);
 	if(hasChild > 1){
 		htmlContent += (' &nbsp|&nbsp Sort children by:')
 		htmlContent += ('<select onchange="sort(this,\''+id+'\')" id = "childSort'+id+'" class = "commentSortButton">');
