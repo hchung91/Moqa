@@ -295,12 +295,24 @@ function loggedInComment(id, parentComment, hasChild){
 	//sort option
 	//console.log('hasChild is ' + hasChild);
 	if(hasChild > 1){
+		htmlContent += ('<span id = "sortSpan'+id+'">')
 		htmlContent += (' &nbsp|&nbsp Sort children by:')
 		htmlContent += ('<select onchange="sort(this,\''+id+'\')" id = "childSort'+id+'" class = "commentSortButton">');
 		htmlContent += ('<option value = "0">Top Score</option>');
 		htmlContent += ('<option value = "1">New</option>');
 		htmlContent += ('<option value = "2">Old</option>');
 		htmlContent += ('</select>');
+		htmlContent += ('</span>')
+	}
+	else{
+		htmlContent += ('<span id = "sortSpan'+id+'" style = "display:none">')
+		htmlContent += (' &nbsp|&nbsp Sort children by:')
+		htmlContent += ('<select onchange="sort(this,\''+id+'\')" id = "childSort'+id+'" class = "commentSortButton">');
+		htmlContent += ('<option value = "0">Top Score</option>');
+		htmlContent += ('<option value = "1">New</option>');
+		htmlContent += ('<option value = "2">Old</option>');
+		htmlContent += ('</select>');
+		htmlContent += ('</span>')
 	}
 	//hidden replybox placeholder
 	htmlContent+=('</p><a class = "hiddenReplyBox" id = "div'+id+'"></a>');	
